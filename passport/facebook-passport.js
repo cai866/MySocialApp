@@ -1,10 +1,9 @@
- const passport = require('passport');
- const GoogleStrategy = require('passport-google-oauth20').Strategy;
- const User = require('../models/user');
- const keys = require('../config/keys');
+const passport = require('passport');
+const keys = require('../config/keys');
+const User = require('../models/user');
+const facebookStrategy = require('passport-facebook').Strategy;
 
-
- passport.serializeUser(function(user, done) {
+passport.serializeUser(function(user, done) {
     done(null, user.id);
   });
   
@@ -12,17 +11,17 @@
     User.findById(id, function(err, user) {
       done(err, user);
     });
-  }); 
+  });
 
-
- passport.use(new GoogleStrategy({
-    clientID: keys.GoogleClientID,
-    clientSecret: keys.GoogleClientSecret,
-    callbackURL: "/auth/google/callback",
+  passport.use(new FacebookStrategy({
+    clientID: FACEBOOK_APP_ID,
+    clientSecret: FACEBOOK_APP_SECRET,
+    callbackURL: "/auth/facebook/callback",
+    profileFields: ['id', 'name', 'photos', 'email'],
     proxy: true
   },
   (accessToken, refreshToken, profile, cb) => {
-   // console.log(profile);
+    //console.log(profile);
     User.findOne({
         google: profile.id
     }).then((user) => {
@@ -30,12 +29,12 @@
             done(null, user);
         }else{
             const newUser = {
-                google: profile.id,
+                facebook: profile.id,
                 fullname: profile.displayName,
                 lastname: profile.name.familyName,
                 fistname: profile.name.givenName,
                 email: profile.emails[0].value,
-                image: profile.photos[0].value.substring(0,profile.photos[0].value.indexOf('?'))
+                image: 'http://graph.facebook.com/${profile.id}/picture?type=large'
             }
             //save data to mongodb
             new User(newUser).save()
@@ -43,6 +42,6 @@
                 done(null, user);
             })
         }
-    })
+    })t
   }
 ));

@@ -3,9 +3,12 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 
-const session = require("express-session"),
-const bodyParser = require("body-parser");
+const session = require('express-session');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+
+require('passport-google-oauth20');
+require('passport-facebook');
 
 //server port number
 const port = 3000;
@@ -70,6 +73,18 @@ app.get('/auth/google/callback',
   app.use('/logout', (req, res) => {
 
   });
+
+  //facebook auth route
+  app.get('/auth/facebook',
+  passport.authenticate('facebook'));
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
+  +
 //connect to remote database, { useUnifiedTopology: true, useNewUrlParser: true } solve the depretion error
 mongoose.Promise = global.Promise;
 mongoose.connect(keys.MongoURI, { useUnifiedTopology: true, useNewUrlParser: true })
