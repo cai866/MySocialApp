@@ -1,6 +1,6 @@
 module.exports = {
-    MongoURL:'mongodb+srv://socialMediaAppChao:socialMediaAppChao@socialmediaapp-weyxo.mongodb.net/<dbname>?retryWrites=true&w=majority',
-    GoogleClientID: '793097372631-bmoe7juqenvcv4j81khgtuinh43fh8vh.apps.googleusercontent.com',
-    GoogleClientSecret: '9QnfiDQPfjeVjGmaA_VgoWmf'
+    MongoURL: process.env.MONGO_URI,
+    GoogleClientID: process.env.GOOGLE_CLIENT_ID,
+    GoogleClientSecret: process.env.GOOGLE_CLIENT_SECRET
 }
 }
