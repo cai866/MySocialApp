@@ -8,10 +8,36 @@
             </div>
             </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-4">  
             <h1>Profile</h1>
-            <p class="card-type"><i class="fa fa-user"></i>{{user.fullname}} </p>
-            <p class="card-type"><i class="fa fa-envelope"></i>{{user.eamil}} </p>
+            <p class="card-text"><i class="fa fa-user"></i> {{user.fullname}}</p>
+            {{#if user.eamil}}
+            <p class="card-text"><i class="fa fa-envelope"></i> {{user.eamil}}</p>
+            {{else}}
+            <form action="/addEmail" method="POST">
+                <input type="text" name="email" class="form-control" placeholder="Enter email address">
+                <button type="submit" class="btn btn-danger">Save</button>
+            </form>
+            {{/if}}
+            {{#if user.phone}}
+            <p class="card-text"><i class="fa fa-phone"></i> {{user.phone}}</p>
+            {{else}}
+                <form action="/addPhone" method="POST" class="form-inline">
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="number" class="form-control" name="phone" placeholder="Enter phone number">
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2"><i class="fa fa-check"></i></button>
+                </form>
+            {{/if}}
+            {{#if user.location}}
+            <p class="card-text"><i class="fa fa-map-marker"></i> {{user.location}} </p>
+            {{else}}
+                <form action="/addLocation" method="POST" class="form-inline">
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="text" class="form-control" name="location" placeholder="Enter location(city and country)">
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2"><i class="fa fa-check"></i></button>
+                </form>
         </div>
     </div>
 </div>

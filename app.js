@@ -9,6 +9,13 @@ const cookieParser = require('cookie-parser');
 
 require('passport-google-oauth20');
 require('passport-facebook');
+require('passport-instagram');
+
+
+const{
+  ensureAuthentication,
+  ensureGuest
+} = require('./helpers/auth');
 
 //server port number
 const port = 3000;
@@ -16,6 +23,7 @@ const port = 3000;
 //the mongoUrl exported from external file 
 const keys = require('./config/keys');
 const User = require('./models/user');
+const user = require('./models/user');
 
 //initial my application
 const app = express();
@@ -41,7 +49,7 @@ app.use(express.static('public'));
 
 
 //handle routes
-app.get('/', (req,res) =>{
+app.get('/', ensureGuest, (req,res) =>{
     res.render('home', { title: 'Hey', message: 'Hello there!' })
     //res.render('home');
 }); 
@@ -85,7 +93,57 @@ app.get('/auth/facebook/callback',
     // Successful authentication, redirect home.
     res.redirect('/');
   });
-  +
+
+  //instagram auth route
+  app.get('/auth/instagram',
+  passport.authenticate('instagram'));
+
+app.get('/auth/instagram/callback', 
+  passport.authenticate('instagram', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
+
+  //add email route
+  app.post('/addEmail', (req, res) => {
+    const email = req.body.email;
+    User.findById({_id: req.user._id})
+    .then((user) => {
+      user.email = email;
+      user.save()
+      .then(() => {
+        res.redirect('/profile');
+      });
+    });
+  });
+
+  //add phone
+  app.post('/addPhone', (req, res) => {
+    const phone = req.body.phone;
+    User.findById({_id: req.user._id})
+    .then((user) => {
+      user.phone = phone;
+      user.save()
+      .then(() => {
+        res.redirect('/profile');
+      });
+    });
+  });
+
+  //add location
+  app.post('/addLocation', (req, res) => {
+    const location = req.body.location;
+    User.findById({_id: req.user._id})
+    .then((user) => {
+      user.location = location;
+      user.save()
+      .then(() => {
+        res.redirect('/profile');
+      });
+    });
+  })
+
 //connect to remote database, { useUnifiedTopology: true, useNewUrlParser: true } solve the depretion error
 mongoose.Promise = global.Promise;
 mongoose.connect(keys.MongoURI, { useUnifiedTopology: true, useNewUrlParser: true })
@@ -94,7 +152,7 @@ mongoose.connect(keys.MongoURI, { useUnifiedTopology: true, useNewUrlParser: tru
 }).catch((err) => {
     console.log(err);
 });
-
+// server listen request
 app.listen(port, () =>{
     console.log('Server is now running on port ${port}');
 });
