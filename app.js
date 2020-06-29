@@ -6,10 +6,16 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const methodOverride = require('method-override');
 
 require('passport-google-oauth20');
 require('passport-facebook');
 require('passport-instagram');
+
+//link passport to server
+require('./passport/google-passport');
+require('./passport/facebook-passport');
+require('./passport/instagram-passport');
 
 
 const{
@@ -24,15 +30,23 @@ const port = 3000;
 const keys = require('./config/keys');
 const User = require('./models/user');
 const user = require('./models/user');
+const Post = require('./models/post');
 
 //initial my application
 const app = express();
 
 //passport configue
 app.use(cookieParser());
-app.use(bodyParser());
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(bodyParser.json());
-app.use(session({ secret: 'keyboard cat' }));
+app.use(session({
+   secret: 'keyboard cat',
+   resave: true,
+   saveUninitialized: true
+}));
+app.use(methodOverride('_method'));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -69,13 +83,15 @@ app.get('/auth/google/callback',
     res.redirect('/profile');
   });
 
-  app.get('/profile',(req, res) => {
-    User.findById({_id: req.user._id})
-    .then((user) => {
+  //handle profile route
+  app.get('/profile', ensureAuthentication, (req, res) => {
+    Post.find({user: req.user._id})
+    .populate('user')
+    .then((posts) => {
         res.render('profile', {
-            user: user
+            posts: posts
         });
-    })
+    });
   });
 
   app.use('/logout', (req, res) => {
@@ -130,11 +146,76 @@ app.get('/auth/instagram/callback',
       });
     });
   });
+//hand get post route
+app.get('/addPost', (req, res) => {
+  res.render('addPost');
+});
+//add post route
+app.post('/savePost', (req, res) => {
+  const allowComments;
+  if(req.body.allowComments){
+      allowComments = true;
+  }else{
+    allowComments = false;
+  }
+  const newPost = {
+    title: req.body.title,
+    body: req.body.body,
+    status: req.body.status,
+    allowComments: allowComments,
+    user: req.user._id
+  }
+  new Post(newPost).save()
+  .then(() => {
+    res.redirect('/posts');
+  });
+});
+//handle editPost route
+app.get('/editPost/:id', (req, res) => {
+    Post.findOne({_id:req.params.id})
+    .then((post) => {
+      res.render('editingPost', {
+        post: post
+      });
+    });
+});
+
+//handle put editingPost route
+app.put('/editingPost/:id', (req, res) => {
+    Post.findOne({_id: req.params.id})
+    .then((post) => {
+      var allowComments;
+      if(req.body.allowComments){
+        allowComments = true;
+      }else{
+        allowComments = false;
+      }
+      post.title = req.body.title;
+      post.body = req.body.body;
+      post.status = req.body.status;
+      post.allowComments = req.body.allowComments;
+      post.save()
+      .then(() => {
+        res.redirect('/profile');
+      });
+    });
+});
+//handle posts route
+app.get('/posts', ensureAuthentication, (req, res) => {
+    Post.find({status: 'public'})
+    .populate('user')
+    .sort({date:'desc'})
+    .then((posts) => {
+        res.render('publicPosts', {
+            posts: posts
+        });
+    });
+});
 
   //add location
   app.post('/addLocation', (req, res) => {
     const location = req.body.location;
-    User.findById({_id: req.user._id})
+    User.findById({_id: req.user.id})
     .then((user) => {
       user.location = location;
       user.save()
@@ -143,6 +224,23 @@ app.get('/auth/instagram/callback',
       });
     });
   })
+
+  //handle route for all users
+  app.get('/users', ensureAuthentication, (req, res) => {
+    User.find({}).then((users) => {
+      res.render('users',{users:users});
+    });
+  });
+
+  //
+  app.get('/user/:id', (req, res) => {
+      User.findById({_id: req.param.id})
+      .then((user) => {
+        res.render('user', {
+          user: user
+        });
+      });
+  });
 
 //connect to remote database, { useUnifiedTopology: true, useNewUrlParser: true } solve the depretion error
 mongoose.Promise = global.Promise;

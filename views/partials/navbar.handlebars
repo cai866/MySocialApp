@@ -1,12 +1,12 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <a class="navbar-brand" href="/">SocialMediaApp</a>
   {{#if user}}
-  <a class="navbar-brand" id="welcome" href="/profile">Hello, {{user.firstname}}</a>
-  <a class="navbar-brand" href="/logout">Logout</a>
+  <a class="navbar-brand" href="/users"><i class="fa fa-users"></i></a>
+  <a class="navbar-brand" href="/post"><i class="fa fa-globe"></i> </a>
   {{else}}
   {{/if}}
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <i class="fa fa-list"></i>
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
