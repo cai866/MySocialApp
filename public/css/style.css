@@ -52,3 +52,28 @@
 h1{
     text-align: center;
 }
+.col-sm-4{
+    margin-bottom: 10px;
+}
+
+#address{
+    color: green;
+}
+
+.post-user-pic{
+    width: 100px;
+    height: auto;
+}
+
+.red{
+    color: red;
+}
+#comment-user-picture{
+    width: 65px;
+    height: auto;
+}
+
+.card{
+    width: 200px;
+    height: auto;
+}

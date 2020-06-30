@@ -146,6 +146,15 @@ app.get('/auth/instagram/callback',
       });
     });
   });
+
+  // handle delete post route
+  app.delete('/:id', (req, res) => {
+    Post.remove({_id:req.params.id})
+    .then(() => {
+      res.redirect('/profile');
+    });
+  });
+
 //hand get post route
 app.get('/addPost', (req, res) => {
   res.render('addPost');
@@ -200,16 +209,23 @@ app.put('/editingPost/:id', (req, res) => {
       });
     });
 });
+
 //handle posts route
 app.get('/posts', ensureAuthentication, (req, res) => {
     Post.find({status: 'public'})
     .populate('user')
+    .populate('comments.commentUser')
     .sort({date:'desc'})
     .then((posts) => {
         res.render('publicPosts', {
             posts: posts
         });
     });
+});
+
+//display one user 's posts
+app.get(('/showposts/:id'), (req, res) => {
+  Post.find()
 });
 
   //add location
