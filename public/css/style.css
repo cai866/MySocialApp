@@ -48,6 +48,8 @@
 #main{
     margin-top: 60px;
     margin-bottom: 50px;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 18px;
 }
 h1{
     text-align: center;
@@ -76,4 +78,21 @@ h1{
 .card{
     width: 200px;
     height: auto;
+}
+
+#success-page {
+    text-align: center;
+    color: green;
+}
+
+#users-image {
+    width: 100px;
+    height: 100px;
+}
+#users-box {
+    margin: 5px 5px 5px 5px;
+}
+
+.row {
+    width: 100%;
 }

@@ -5,5 +5,7 @@ module.exports = {
     FacebookClientID: '933038097134043',
     FacebookClientSecret: '8f8ebe30370fd8258b27ec43a9fbfb24',
     InstagramClientID:' ',
-    InstagramClientSecret:' '
+    InstagramClientSecret:' ',
+    StripePublishableKey: 'pk_test_51GzcXSAdy5nVGLRxuOz2wYJliUXE0ObI4oTFFdAGqti0pwmMQ9W6rxCKp4yhZfsjuP9Xgzvqm6NJqX7zrD0DTWFO00msQvZt4R',
+    StripeSecretKey: 'sk_test_51GzcXSAdy5nVGLRx0FotG2cplgXhmuNkiqBiA985bwonTWT5gmyKpnSR439vRbv0REpmJyC1YXupbSayyu933QuA00IRsMLse8'
 }
